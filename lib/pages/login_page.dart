@@ -1,10 +1,24 @@
+import 'package:cars/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
   final _tLogin = TextEditingController();
+
   final _tSenha = TextEditingController();
+
+  final _focusSenha = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +38,60 @@ class LoginPage extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: ListView(
           children: <Widget>[
-            _input("Login", "Digite seu login", controller: _tLogin, validator: _validateLogin),
+            _input(
+              "E-mail*", 
+              "Digite seu email", 
+              controller: _tLogin, 
+              validator: 
+              _validateLogin,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              nextFocus: _focusSenha,
+            ),
               SizedBox(height: 10,),
-              _input("Senha", "Digite sua senha", password: true, controller: _tSenha, validator: _validateSenha),
+              _input(
+                "Senha*", 
+                "Digite sua senha", 
+                password: true, 
+                controller: _tSenha, 
+                validator: _validateSenha,
+                keyboardType: TextInputType.number,
+                focusNode: _focusSenha
+              ),
               SizedBox(height: 20,),
-              _button("Entrar", onClickLogin),
+              AppButton(
+                "Entrar", 
+                onPressed: _onClickLogin,
+              ),
             ],
           ),
         ),
       );
     }
-            
-  _input(String label, String hint, { bool password = false, controller, FormFieldValidator<String> validator }) {
+
+  _input(
+    String label, 
+    String hint, { 
+      bool password = false, 
+      TextEditingController controller, 
+      FormFieldValidator<String> validator,
+      TextInputType keyboardType,
+      TextInputAction textInputAction,
+      FocusNode focusNode,
+      FocusNode nextFocus,
+    }) {
     return TextFormField(
       controller: controller,
       obscureText: password,
       validator: validator,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      focusNode: focusNode,
+      onFieldSubmitted: (String text) {
+        if(nextFocus != null) {
+          FocusScope.of(context).requestFocus(nextFocus);
+        }
+      },
       style: TextStyle(
         fontSize: 20,
         color: Colors.grey,
@@ -58,24 +110,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  _button(String text, Function onPressed) {
-    return Container(
-      height: 58,
-      child: RaisedButton(
-        color: Colors.deepPurple,
-        child: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-          ),
-        ),
-        onPressed: onPressed,
-      ),
-    );
-  }
-
-  void onClickLogin() {
+  void _onClickLogin() {
 
     if(!_formKey.currentState.validate()) {
       return;
@@ -89,7 +124,7 @@ class LoginPage extends StatelessWidget {
 
   String _validateLogin(String text) {
     if(text.isEmpty) {
-    return "Digite o Login";
+    return "Digite o email";
     }
     return null;
   }
@@ -102,5 +137,10 @@ class LoginPage extends StatelessWidget {
       return "A senha precisa ter pelo menos 6 números";
     }
     return null;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
