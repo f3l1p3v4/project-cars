@@ -1,5 +1,6 @@
 import 'package:cars/pages/home_page.dart';
 import 'package:cars/pages/login_api.dart';
+import 'package:cars/pages/user.dart';
 import 'package:cars/utils/nav.dart';
 import 'package:cars/widgets/app_button.dart';
 import 'package:cars/widgets/app_text.dart';
@@ -84,9 +85,10 @@ class _LoginPageState extends State<LoginPage> {
 
     print("$login, $senha");
 
-    bool ok = await LoginApi.login(login, senha);
+    User user = await LoginApi.login(login, senha);
 
-    if(ok) { 
+    if(user != null) { 
+      print(user);
       push(context, HomePage());
     } else {
       print("Login incorreto");
@@ -104,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
     if(text.isEmpty) {
     return "Digite a Senha";
     }
-    if(text.length < 6) {
+    if(text.length < 3) {
       return "A senha precisa ter pelo menos 6 números";
     }
     return null;
